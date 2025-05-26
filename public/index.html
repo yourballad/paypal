@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <form id="loginForm">
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <div class="buttons">
+        <button type="submit">Login</button>
+      </div>
+      <p id="message"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const message = document.getElementById('message');
+      message.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: form.username.value,
+            password: form.password.value
+          })
+        });
+
+        const contentType = res.headers.get('Content-Type');
+
+        // Try to parse JSON only if content-type is JSON
+        const data = contentType && contentType.includes('application/json')
+          ? await res.json()
+          : null;
+
+        if (res.ok) {
+          // Redirect on success
+          window.location.href = '/orders.html';
+        } else {
+          message.textContent = 'Login failed: ' + (data?.msg || 'Unexpected server response');
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        message.textContent = 'Login error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
