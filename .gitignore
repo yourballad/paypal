@@ -1,3 +1,10 @@
+# Environment variables
+.env
 
-.env
-.env
+# Node modules (big folder, shouldn't be in Git)
+node_modules/
+
+# Log files and system artifacts (optional)
+*.log
+.DS_Store
+.env.example

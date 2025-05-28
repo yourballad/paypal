@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shopify Orders</title>
+  <style>
+    :root {
+      --primary: #4B3F72;
+      --complementary: #3BA99C;
+      --complementary-hover: #327E76;
+      --background: #F9FAFB;
+      --text-dark: #222;
+      --white: #ffffff;
+      --light-gray: #f2f2f2;
+      --border-color: #E0E0E0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background);
+      padding: 2rem;
+      margin: 0;
+      color: var(--text-dark);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background-color: var(--primary);
+      color: var(--white);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    #logoutBtn, #exportBtn {
+      background-color: var(--complementary);
+      color: var(--white);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100px;
+      height: 40px;
+      font-size: 1rem;
+      margin-left: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    #logoutBtn:hover, #exportBtn:hover {
+      background-color: var(--complementary-hover);
+    }
+
+    .table-wrapper {
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--white);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background-color: var(--primary);
+      color: var(--white);
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      text-align: left;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      word-break: break-word;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--light-gray);
+    }
+
+    tr:hover {
+      background-color: #e6f3f1;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>Your Ballad Orders</h1>
+    <div>
+      <button id="exportBtn">Export</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <div class="table-wrapper">
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date Purchased</th>
+          <th>Customer Name</th>
+          <th>Email</th>
+          <th>Quantity</th>
+          <th>Total Amount</th>
+          <th>VAT Amount</th>
+          <th>Fulfilled At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- JS will populate rows here -->
+      </tbody>
+    </table>
+  </div>
+  <br>
+
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script>
+    async function fetchOrders() {
+      try {
+        const res = await fetch('/orderstable');
+        if (res.status === 401) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const orders = await res.json();
+        const tbody = document.querySelector('#ordersTable tbody');
+        tbody.innerHTML = '';
+        console.log(orders);
+
+        orders.forEach(order => {
+          const tr = document.createElement('tr');
+          const values = [
+            order.order_id,
+            order.created_at || '',
+            `${order.first_name}`,
+            order.email,
+            order.line_items,
+            order.total_price,
+            order.vat,
+            order.fulfillment_status
+          ];
+
+          values.forEach(val => {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.appendChild(td);
+          });
+
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Failed to load orders:', err);
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (err) {
+        console.error('Logout failed:', err);
+      }
+      window.location.href = '/';
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const table = document.getElementById('ordersTable');
+      const workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
+      XLSX.writeFile(workbook, 'shopify_orders.xlsx');
+    });
+
+    fetchOrders();
+  </script>
+</body>
+</html>

@@ -1,46 +1,88 @@
 const mongoose = require('mongoose');
 
 const CreatedOrderSchema = new mongoose.Schema({
-  shopifyOrderId: {
+  id: {
     type: Number,
     required: true,
     unique: true
   },
-  customer: {
-    id: Number,
-    first_name: String,
-    last_name: String,
-    email: String
+  order_number: Number,
+  name: String,
+  email: String,
+  financial_status: String,
+  fulfillment_status: {
+    type: String,
+    default: null
   },
+  created_at: String,
+  currency: String,
+  total_price: String,
+  subtotal_price: String,
+  total_tax: String,
+
   line_items: [
     {
       title: String,
-      sku: String,
+      variant_title: String,
       quantity: Number,
       price: String,
-      vendor: String,
-      fulfillment_status: String
+      product_id: Number,
+      variant_id: Number,
+      tax_lines: [
+        {
+          title: String,
+          price: String,
+          rate: Number
+        }
+      ]
     }
   ],
-  total_price: String,
-  currency: String,
-  created_at: String,
-  fulfillment_status: {
-    type: String,
-    default: 'pending'
+
+  shipping_address: {
+    first_name: String,
+    last_name: String,
+    address1: String,
+    city: String,
+    province: String,
+    zip: String,
+    country: String,
+    country_code: String,
+    province_code: String
   },
+
+  billing_address: {
+    first_name: String,
+    last_name: String,
+    address1: String,
+    city: String,
+    province: String,
+    zip: String,
+    country: String,
+    country_code: String,
+    province_code: String
+  },
+
+  customer: {
+    id: Number,
+    email: String,
+    first_name: String,
+    last_name: String
+  },
+
+  payment_gateway_names: [String],
+
+  tags: String,
+
   isPending: {
     type: Boolean,
     default: true
   },
-  fulfillment_date: {
-    type: Date
-  },
+  fulfillment_date: Date,
   saved_at: {
     type: Date,
     default: Date.now
   }
 });
 
-// Model name should be singular and capitalized
+// Export the model
 module.exports = mongoose.model('Order', CreatedOrderSchema);

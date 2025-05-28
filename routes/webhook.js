@@ -34,17 +34,28 @@ router.post('/order-created', async (req, res) => {
     }
 
     const order = JSON.parse(req.body.toString('utf8'));
+
     const {
       id,
-      customer,
-      line_items,
-      total_price,
-      currency,
+      order_number,
+      name,
+      email,
+      financial_status,
+      fulfillment_status,
       created_at,
-      fulfillment_status
+      currency,
+      total_price,
+      subtotal_price,
+      total_tax,
+      line_items,
+      shipping_address,
+      billing_address,
+      customer,
+      payment_gateway_names,
+      tags
     } = order;
 
-    // 🌍 Fetch USD to ZAR rate
+    // 🌍 Currency conversion (only if in USD)
     let exchangeRate = 0;
     let convertedPrice = null;
     if (currency === 'USD') {
@@ -55,33 +66,67 @@ router.post('/order-created', async (req, res) => {
 
     // 💾 Save to MongoDB
     await Order.create({
-      shopifyOrderId: id,
-      customer: {
-        id: customer?.id,
-        first_name: customer?.first_name,
-        last_name: customer?.last_name,
-        email: customer?.email
-      },
-      line_items: line_items.map(item => ({
-        title: item.title,
-        sku: item.sku,
-        quantity: item.quantity,
-        price: item.price,
-        vendor: item.vendor,
-        fulfillment_status: item.fulfillment_status
-      })),
+      id: id,
+      order_number,
+      name,
+      email,
+      financial_status,
+      fulfillment_status,
+      created_at,
+      currency,
       total_price,
-      currency, // 👈 fixed this: now saving string like "USD" or "ZAR"
+      subtotal_price,
+      total_tax,
       converted_total_price_zar: convertedPrice,
       exchange_rate_usd_to_zar: exchangeRate,
-      created_at,
-      fulfillment_status,
+      line_items: line_items.map(item => ({
+        title: item.title,
+        variant_title: item.variant_title,
+        quantity: item.quantity,
+        price: item.price,
+        product_id: item.product_id,
+        variant_id: item.variant_id,
+        tax_lines: item.tax_lines?.map(tax => ({
+          title: tax.title,
+          price: tax.price,
+          rate: tax.rate
+        })) || []
+      })),
+      shipping_address: {
+        first_name: shipping_address?.first_name,
+        last_name: shipping_address?.last_name,
+        address1: shipping_address?.address1,
+        city: shipping_address?.city,
+        province: shipping_address?.province,
+        zip: shipping_address?.zip,
+        country: shipping_address?.country,
+        country_code: shipping_address?.country_code,
+        province_code: shipping_address?.province_code
+      },
+      billing_address: {
+        first_name: billing_address?.first_name,
+        last_name: billing_address?.last_name,
+        address1: billing_address?.address1,
+        city: billing_address?.city,
+        province: billing_address?.province,
+        zip: billing_address?.zip,
+        country: billing_address?.country,
+        country_code: billing_address?.country_code,
+        province_code: billing_address?.province_code
+      },
+      customer: {
+        id: customer?.id,
+        email: customer?.email,
+        first_name: customer?.first_name,
+        last_name: customer?.last_name
+      },
+      payment_gateway_names,
+      tags,
       isPending: fulfillment_status !== 'fulfilled'
     });
 
-    console.log(`✅ Order ${id} saved with ZAR: R${convertedPrice}`);
+    console.log(`✅ Order #${order_number} saved successfully`);
     res.status(200).send('Order saved');
-
   } catch (err) {
     console.error('❌ Order creation error:', err.message || err);
     res.status(500).send('Internal server error');
@@ -96,11 +141,11 @@ router.post('/order-fulfilled', async (req, res) => {
 
     const data = JSON.parse(req.body.toString('utf8'));
     const orderId = data.id;
-
+    console.log(data)
     const fulfillmentDate = data.fulfillments?.[0]?.created_at || new Date();
 
     const updated = await Order.findOneAndUpdate(
-      { shopifyOrderId: orderId },
+      { id: orderId },
       {
         $set: {
           isPending: false,
@@ -116,7 +161,7 @@ router.post('/order-fulfilled', async (req, res) => {
       return res.status(404).send('Order not found');
     }
 
-    console.log('✅ Fulfilled order updated:', updated.shopifyOrderId);
+    console.log('✅ Fulfilled order updated:', updated.id);
     res.status(200).send('Order updated');
   } catch (error) {
     console.error('❌ Error updating fulfillment:', error.message || error);

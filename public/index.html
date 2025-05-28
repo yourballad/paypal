@@ -30,11 +30,13 @@
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // 🔑 This is crucial!
           body: JSON.stringify({
             username: form.username.value,
             password: form.password.value
           })
         });
+
 
         const contentType = res.headers.get('Content-Type');
 
@@ -45,7 +47,7 @@
 
         if (res.ok) {
           // Redirect on success
-          window.location.href = '/orders.html';
+          window.location.href = '/orders';
         } else {
           message.textContent = 'Login failed: ' + (data?.msg || 'Unexpected server response');
         }
