@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Auth Routes (after JSON middleware)
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
-
+//app.use('/', authRoutes);
 // Serve login page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
 
 app.use('/orders', ordersRoute);
 app.use('/', ordersRoute);
+
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

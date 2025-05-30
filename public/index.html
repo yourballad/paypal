@@ -5,6 +5,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #764ba2;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .buttons {
+      margin-top: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #764ba2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #5a3b85;
+    }
+
+    .forgot-link {
+      margin-top: 1rem;
+      display: block;
+      color: #764ba2;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    #message {
+      color: red;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -15,6 +86,8 @@
       <div class="buttons">
         <button type="submit">Login</button>
       </div>
+      <a href="/api/auth/forgotpassword">Forgot Password?</a>
+
       <p id="message"></p>
     </form>
   </div>
@@ -30,23 +103,19 @@
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // 🔑 This is crucial!
+          credentials: 'include',
           body: JSON.stringify({
             username: form.username.value,
             password: form.password.value
           })
         });
 
-
         const contentType = res.headers.get('Content-Type');
-
-        // Try to parse JSON only if content-type is JSON
         const data = contentType && contentType.includes('application/json')
           ? await res.json()
           : null;
 
         if (res.ok) {
-          // Redirect on success
           window.location.href = '/orders';
         } else {
           message.textContent = 'Login failed: ' + (data?.msg || 'Unexpected server response');

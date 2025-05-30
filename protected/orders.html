@@ -4,100 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shopify Orders</title>
-  <style>
-    :root {
-      --primary: #4B3F72;
-      --complementary: #3BA99C;
-      --complementary-hover: #327E76;
-      --background: #F9FAFB;
-      --text-dark: #222;
-      --white: #ffffff;
-      --light-gray: #f2f2f2;
-      --border-color: #E0E0E0;
-    }
+  <!-- Assume you wrap this in a proper HTML template with <head> and <body> -->
+<style>
+  :root {
+    --primary: #4B3F72;
+    --accent: #3BA99C;
+    --accent-hover: #327E76;
+    --bg: #F9FAFB;
+    --text: #111827;
+    --table-bg: #ffffff;
+    --border: #e5e7eb;
+    --hover-row: #f0fdfa;
+  }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--background);
-      padding: 2rem;
-      margin: 0;
-      color: var(--text-dark);
-    }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 2rem;
+    color: var(--text);
+  }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      background-color: var(--primary);
-      color: var(--white);
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
-    }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
 
-    h1 {
-      margin: 0;
-      font-size: 1.75rem;
-    }
+  nav h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
 
-    #logoutBtn, #exportBtn {
-      background-color: var(--complementary);
-      color: var(--white);
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100px;
-      height: 40px;
-      font-size: 1rem;
-      margin-left: 10px;
-      transition: background-color 0.3s ease;
-    }
+  button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-    #logoutBtn:hover, #exportBtn:hover {
-      background-color: var(--complementary-hover);
-    }
+  button:hover {
+    background-color: var(--accent-hover);
+  }
 
-    .table-wrapper {
-      max-height: 70vh;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background-color: var(--white);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
+  .table-wrapper {
+    background-color: var(--table-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: auto;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+  }
 
-    thead {
-      position: sticky;
-      top: 0;
-      background-color: var(--primary);
-      color: var(--white);
-      z-index: 1;
-    }
+  thead {
+    background-color: var(--primary);
+    color: white;
+  }
 
-    th, td {
-      padding: 0.75rem;
-      border: 1px solid var(--border-color);
-      text-align: left;
-      white-space: normal;
-      overflow: visible;
-      text-overflow: unset;
-      word-break: break-word;
-    }
+  th, td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
 
-    tr:nth-child(even) {
-      background-color: var(--light-gray);
-    }
+  tr:nth-child(even) {
+    background-color: #f1f5f9;
+  }
 
-    tr:hover {
-      background-color: #e6f3f1;
-    }
-  </style>
+  tr:hover {
+    background-color: var(--hover-row);
+  }
+</style>
+
 </head>
 <body>
   <nav>
