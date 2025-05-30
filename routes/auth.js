@@ -79,7 +79,7 @@ router.post('/forgot-password', async (req, res) => {
       }
     });
     
-    const resetLink = `https://pure-cliffs-81924.herokuapp.com/reset-password-page?token=${token}`;
+    const resetLink = `https://pure-cliffs-81924-94f25bb23ae7.herokuapp.com/reset-password-page?token=${token}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
