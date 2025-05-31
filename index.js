@@ -22,8 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Auth Routes (after JSON middleware)
 const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
-//app.use('/', authRoutes);
+app.use('/', authRoutes);
 // Serve login page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
